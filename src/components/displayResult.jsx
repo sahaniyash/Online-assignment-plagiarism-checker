@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../App.css';
 
 function PlagiarismChecker() {
   const [files, setFiles] = useState([]);
@@ -36,7 +37,7 @@ function PlagiarismChecker() {
     <div>
       <h1>Plagiarism Checker</h1>
       <input type="file" accept=".pdf" multiple onChange={handleFileChange} />
-      <button onClick={handleFileUpload}>Check Plagiarism</button>
+      <button onClick={handleFileUpload} className='check'>Check Plagiarism</button>
       {plagiarismResults.length > 0 && (
         <div>
           <h2>Plagiarism Results</h2>

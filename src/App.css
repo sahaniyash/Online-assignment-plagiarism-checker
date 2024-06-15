@@ -1,4 +1,17 @@
 /* App.css */
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
 .app {
   background: linear-gradient(180deg, #f4e869, #3085c3);
   height: 100vh;
@@ -6,40 +19,104 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  color: #fff;
-  font-family: Arial, sans-serif;
+  color: #000;
 }
 
+/* Header Styles */
 .header {
   text-align: center;
   padding: 20px;
   background-color: #3085c3;
   width: 100%;
+  color: #fff;
 }
 
 .header h1 {
   margin: 0;
 }
 
+/* Main Content Styles */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  padding: 20px;
 }
 
+/* Form Styles */
 .plagiarism-check-form {
-  /* Add your form styles here */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
+.plagiarism-check-form input[type="file"] {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.plagiarism-check-form button {
+  background-color: #3085c3;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.plagiarism-check-form button:hover {
+  background-color: #256b99;
+}
+
+/* Results Styles */
 .plagiarism-results {
-  /* Add your results display styles here */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
 }
 
+.plagiarism-results h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.plagiarism-results p {
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+/* Footer Styles */
 .footer {
   text-align: center;
   background-color: #3085c3;
   padding: 10px;
   width: 100%;
+  color: #fff;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 600px) {
+  .plagiarism-check-form, .plagiarism-results {
+    width: 90%;
+    padding: 10px;
+  }
+  
+  .plagiarism-results h2 {
+    font-size: 1.5rem;
+  }
 }

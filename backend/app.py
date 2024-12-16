@@ -6,11 +6,17 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-# nltk.download('stopwords')
-# nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('punkt_tab')
 
 app = Flask(__name__)
 CORS(app, resources={r"/check-plagiarism": {"origins": "*"}})  # Enable CORS
+
+@app.after_request
+def set_referrer_policy(response):
+    response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
+    return response
 
 def extract_text_from_pdf(pdf_file):
     """Extract text from a PDF file."""
@@ -75,4 +81,4 @@ def check_plagiarism():
     return jsonify({'plagiarism_results': plagiarism_results}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

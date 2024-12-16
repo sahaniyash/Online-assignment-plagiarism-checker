@@ -1,34 +1,38 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import PyPDF2
-import os
+from io import BytesIO
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-app = Flask(__name__)
-CORS(app, resources={r"/check-plagiarism":{"origins": "*"}})  # Enable CORS
+# nltk.download('stopwords')
+# nltk.download('punkt')
 
-app.config['UPLOAD_FOLDER'] = 'uploads'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+app = Flask(__name__)
+CORS(app, resources={r"/check-plagiarism": {"origins": "*"}})  # Enable CORS
 
 def extract_text_from_pdf(pdf_file):
+    """Extract text from a PDF file."""
     pdf_text = ''
     try:
-        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
-        for page_num in range(pdf_reader.getNumPages()):
-            page = pdf_reader.getPage(page_num)
-            pdf_text += page.extractText()
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        for page_num in range(len(pdf_reader.pages)):
+            page = pdf_reader.pages[page_num]
+            pdf_text += page.extract_text()
     except Exception as e:
         print(f"Error extracting text from PDF: {e}")
     return pdf_text
 
 def text_preprocessing(text):
+    """Preprocess text by tokenizing and removing stopwords."""
     tokens = word_tokenize(text)
     stop_words = set(stopwords.words('english'))
     tokens = [word for word in tokens if word.lower() not in stop_words]
     return tokens
 
 def calculate_similarity(text1, text2):
+    """Calculate Jaccard similarity between two texts."""
     tokens1 = text_preprocessing(text1)
     tokens2 = text_preprocessing(text2)
 
@@ -40,42 +44,35 @@ def calculate_similarity(text1, text2):
     similarity = intersection / union
     return similarity
 
+def process_files(files):
+    """Process and compare all uploaded files."""
+    file_contents = {file.filename: extract_text_from_pdf(BytesIO(file.read())) for file in files}
+    results = []
+
+    for filename1, text1 in file_contents.items():
+        file_results = []
+        for filename2, text2 in file_contents.items():
+            if filename1 != filename2:  # Skip self-comparison
+                similarity = calculate_similarity(text1, text2)
+                file_results.append({'file': filename2, 'plagiarism': round(similarity * 100, 2)})
+        results.append({'file': filename1, 'results': file_results})
+    return results
+
 @app.route('/check-plagiarism', methods=['POST'])
 def check_plagiarism():
+    """API endpoint for checking plagiarism."""
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part'})
+        return jsonify({'error': 'No file part provided'}), 400
 
     files = request.files.getlist('file')
 
     if not files:
-        return jsonify({'error': 'No selected files'})
+        return jsonify({'error': 'No selected files'}), 400
 
-    plagiarism_results = []
+    # Process files and calculate plagiarism
+    plagiarism_results = process_files(files)
 
-    for file1 in files:
-        file1.save(os.path.join(app.config['UPLOAD_FOLDER'], file1.filename))
-        pdf_path1 = os.path.join(app.config['UPLOAD_FOLDER'], file1.filename)
-        text1 = extract_text_from_pdf(pdf_path1)
-
-        results = []
-        for file2 in files:
-            if file1 == file2:
-                continue  # Skip comparing the file to itself
-
-            file2.save(os.path.join(app.config['UPLOAD_FOLDER'], file2.filename))
-            pdf_path2 = os.path.join(app.config['UPLOAD_FOLDER'], file2.filename)
-            text2 = extract_text_from_pdf(pdf_path2)
-
-            similarity = calculate_similarity(text1, text2)
-            results.append({'file': file2.filename, 'plagiarism': similarity})
-
-            os.remove(pdf_path2)
-
-        plagiarism_results.append({'file': file1.filename, 'results': results})
-        os.remove(pdf_path1)
-
-    response_data = {'plagiarism_results': plagiarism_results}
-    return jsonify(response_data), 200, {'Content-Type': 'application/json'}
+    return jsonify({'plagiarism_results': plagiarism_results}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

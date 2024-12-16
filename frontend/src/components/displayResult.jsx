@@ -40,14 +40,14 @@ function PlagiarismChecker() {
       <button onClick={handleFileUpload} className='check'>Check Plagiarism</button>
       {plagiarismResults.length > 0 && (
         <div>
-          <h2>Plagiarism Results</h2>
+          <h1>Plagiarism Results</h1>
           {plagiarismResults.map((result, index) => (
             <div key={index}>
-              <p>File: {result.file}</p>
-              <h3>Plagiarism Percentages:</h3>
+              <h2>File: {result.file}</h2>
+              <h4>Plagiarism Percentages:</h4>
               {result.results.map((plagiarism, subIndex) => (
                 <div key={subIndex}>
-                  <p>{plagiarism.file}: {plagiarism.plagiarism * 100}%</p>
+                  <p>{plagiarism.file}: {plagiarism.plagiarism}%</p>
                 </div>
               ))}
             </div>

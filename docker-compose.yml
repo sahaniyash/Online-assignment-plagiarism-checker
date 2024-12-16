@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"  # Expose backend on port 5000
+    volumes:
+      - ./backend:/app  # Mount the backend code for development
+    environment:
+      - FLASK_ENV=production  # Set environment variable for Flask
+    depends_on:
+      - frontend
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Expose frontend on port 3000
+    volumes:
+      - ./frontend:/app  # Mount the frontend code for development
+    stdin_open: true
+    tty: true

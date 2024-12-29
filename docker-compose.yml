@@ -1,33 +1,19 @@
-version: "3.8"
-
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
     ports:
-      - "5000:5000"  # Expose backend on port 5000
-    volumes:
-      - ./backend:/app  # Mount the backend code for development
-    environment:
-      - FLASK_ENV=production  # Set environment variable for Flask
-    depends_on:
-      - frontend
+      - "5000:5000"
     networks:
       - app-network
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    build: ./frontend
     ports:
-      - "3000:3000"  # Expose frontend on port 3000
-    volumes:
-      - ./frontend:/app  # Mount the frontend code for development
-    stdin_open: true
-    tty: true
+      - "3000:3000"
     networks:
       - app-network
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
 
 networks:
   app-network:

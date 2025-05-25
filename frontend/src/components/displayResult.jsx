@@ -20,7 +20,7 @@ function PlagiarismChecker() {
         formData.append('file', file);
       });
 
-      const response = await axios.post('https://online-assignment-plagiarism-checker.onrender.com/check-plagiarism', formData, {
+      const response = await axios.post('http://backend:5000', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
